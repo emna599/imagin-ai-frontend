@@ -1,3 +1,4 @@
+
 # IMAGIN.AI Frontend
 
 Interface Angular pour IMAGIN.AI
@@ -25,4 +26,4 @@ Frontend pour IMAGIN.AI - Trois interfaces distinctes :
 - RxJS
 ```
 
----
+
