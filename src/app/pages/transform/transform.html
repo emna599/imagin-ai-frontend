@@ -1,0 +1,46 @@
+<div class="transform-container">
+  <h1>✨ Transformez votre selfie en œuvre d'art</h1>
+
+  <!-- Zone d'upload -->
+  <div class="upload-section">
+    <label for="file-input" class="upload-btn">
+      📤 Choisir une image
+    </label>
+    <input
+      id="file-input"
+      type="file"
+      (change)="onFileSelected($event)"
+      accept="image/*"
+      hidden
+    >
+  </div>
+
+  <!-- Aperçu image originale -->
+  <div class="preview-section" *ngIf="imagePreview">
+    <h3>Image originale</h3>
+    <img [src]="imagePreview" alt="Original">
+
+    <button
+      class="transform-btn"
+      (click)="transform()"
+      [disabled]="isLoading"
+    >
+      {{ isLoading ? '⏳ Transformation...' : '🎨 Transformer' }}
+    </button>
+  </div>
+
+  <!-- Résultat artistique -->
+  <div class="result-section" *ngIf="transformedImage">
+    <h3>🖼️ Résultat artistique</h3>
+    <img [src]="transformedImage" alt="Transformé">
+
+    <button class="download-btn" (click)="downloadImage()">
+      💾 Télécharger
+    </button>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div class="error-message" *ngIf="errorMessage">
+    ⚠️ {{ errorMessage }}
+  </div>
+</div>
