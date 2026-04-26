@@ -1,11 +1,12 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-transform',
   standalone: true,
-  imports: [CommonModule, HttpClientModule],
+  imports: [CommonModule, HttpClientModule, RouterModule],
   templateUrl: './transform.html',
   styleUrls: ['./transform.css']
 })
@@ -15,34 +16,36 @@ export class TransformComponent {
   transformedImage: string | null = null;
   isLoading: boolean = false;
   errorMessage: string = '';
+  successMessage: string = '';
 
-  // On injecte ChangeDetectorRef pour forcer Angular à rafraîchir l'écran
+  private readonly API_URL = 'http://localhost:5000';
+
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
-
     if (!file) return;
 
-    // Vérification du type
     if (!file.type.startsWith('image/')) {
-      this.errorMessage = 'Veuillez sélectionner une image valide.';
+      this.errorMessage = 'Veuillez sélectionner une image valide (PNG, JPG, JPEG).';
+      return;
+    }
+
+    if (file.size > 16 * 1024 * 1024) {
+      this.errorMessage = 'L\'image ne doit pas dépasser 16 MB.';
       return;
     }
 
     this.selectedFile = file;
     this.errorMessage = '';
+    this.successMessage = '';
     this.transformedImage = null;
 
     const reader = new FileReader();
-
     reader.onload = (e: any) => {
-      // On met à jour la variable et on force le rafraîchissement
       this.imagePreview = e.target.result;
       this.cdr.detectChanges();
-      console.log('Aperçu généré avec succès');
     };
-
     reader.readAsDataURL(file);
   }
 
@@ -54,24 +57,36 @@ export class TransformComponent {
 
     this.isLoading = true;
     this.errorMessage = '';
+    this.successMessage = '';
 
     const formData = new FormData();
     formData.append('image', this.selectedFile);
 
-    // Envoi vers ton Backend Flask (Port 5000 par défaut)
-    this.http.post<any>('http://localhost:5000/transform', formData).subscribe({
+    this.http.post<any>(`${this.API_URL}/transform`, formData).subscribe({
       next: (response) => {
-        if (response.imageUrl) {
-          this.transformedImage = 'http://localhost:5000' + response.imageUrl;
-        } else if (response.imageBase64) {
-          this.transformedImage = 'data:image/jpeg;base64,' + response.imageBase64;
+        if (response.success) {
+          // Priorité au base64 (affichage instantané), sinon URL
+          if (response.result) {
+            this.transformedImage = response.result;  // data:image/jpeg;base64,...
+          } else if (response.imageUrl) {
+            this.transformedImage = response.imageUrl;
+          }
+          this.successMessage = 'Transformation réussie !';
+        } else {
+          this.errorMessage = response.error || 'Erreur lors de la transformation.';
         }
         this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error(err);
-        this.errorMessage = 'Erreur de connexion avec le serveur Flask.';
+        console.error('Erreur API:', err);
+        if (err.status === 0) {
+          this.errorMessage = 'Impossible de contacter le serveur. Vérifiez que Flask tourne sur le port 5000.';
+        } else if (err.status === 500) {
+          this.errorMessage = 'Erreur serveur — le modèle IA n\'est peut-être pas chargé.';
+        } else {
+          this.errorMessage = err.error?.error || 'Erreur de connexion avec le serveur.';
+        }
         this.isLoading = false;
         this.cdr.detectChanges();
       }
@@ -82,7 +97,17 @@ export class TransformComponent {
     if (!this.transformedImage) return;
     const link = document.createElement('a');
     link.href = this.transformedImage;
-    link.download = 'artify_result.jpg';
+    link.download = `artify_${Date.now()}.jpg`;
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+  }
+
+  reset(): void {
+    this.selectedFile = null;
+    this.imagePreview = null;
+    this.transformedImage = null;
+    this.errorMessage = '';
+    this.successMessage = '';
   }
 }
