@@ -10,5 +10,5 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
-  // Tu peux ajouter ici des méthodes si besoin
+  // No logic needed — pure presentational component
 }
