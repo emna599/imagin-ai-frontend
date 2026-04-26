@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # IMAGIN.AI Frontend
 
@@ -8,11 +9,26 @@ Frontend pour IMAGIN.AI - Trois interfaces distinctes :
 - **ARTIFY** : Transformation artistique d'images
 - **INSIGHT** : Analyse d'émotions faciales
 - **STYLE ME** : Recommandation vestimentaire
+=======
+# IMAGIN.AI Frontend
+
+Interface Angular pour IMAGIN.AI
+
+## 📋 Description
+Frontend pour IMAGIN.AI - Trois interfaces distinctes :
+- **ARTIFY** : Transformation artistique d'images
+- **INSIGHT** : Analyse d'émotions faciales
+- **STYLE ME** : Recommandation vestimentaire
+
+>>>>>>> 5b9a5db (save local frontend changes)
 
 
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5b9a5db (save local frontend changes)
 ## 👥 Équipe
 - **Emna Belkahla** 
 - **Dorra Belkahla**
@@ -26,4 +42,8 @@ Frontend pour IMAGIN.AI - Trois interfaces distinctes :
 - RxJS
 ```
 
+<<<<<<< HEAD
 
+=======
+---
+>>>>>>> 5b9a5db (save local frontend changes)
